@@ -31,6 +31,7 @@ from sqlfluff.core.parser import (
     Delimited,
     GreedyUntil,
     Indent,
+    ImplicitIndent,
     KeywordSegment,
     Matchable,
     MultiStringParser,
@@ -2091,7 +2092,15 @@ class WhereClauseSegment(BaseSegment):
     )
     parse_grammar: Optional[Matchable] = Sequence(
         "WHERE",
-        Indent,
+        # NOTE: The indent here is implicit to allow
+        # constructions like:
+        #
+        #    WHERE a
+        #        AND b
+        #
+        # to be valid without forcing an indent between
+        # "WHERE" and "a".
+        ImplicitIndent,
         OptionallyBracketed(Ref("ExpressionSegment")),
         Dedent,
     )
